@@ -8,9 +8,31 @@ import StepsNav from '../components/StepsNav.vue'
 const router = useRouter()
 const userStore = useUserStore()
 
+/**
+ * 营养数据接口
+ * @interface NutritionData
+ * @description 存储用户的营养计算结果，包括基础代谢率、每日能量消耗和三大营养素分配
+ */
+interface NutritionData {
+  /** 基础代谢率(BMR)，单位：kcal/天 */
+  bmr: number;
+  /** 每日总能量消耗(TDEE)，单位：kcal/天 */
+  tdee: number;
+  /** 增重所需每日摄入热量，单位：kcal/天 */
+  dailyCalories: number;
+  /** 每周科学增重目标，单位：kg/周 */
+  weeklyGainGoal: number;
+  /** 每日蛋白质摄入量，单位：g/天 */
+  protein: number;
+  /** 每日碳水化合物摄入量，单位：g/天 */
+  carbs: number;
+  /** 每日脂肪摄入量，单位：g/天 */
+  fat: number;
+}
+
 const loading = ref(true)
 const calculationComplete = ref(false)
-const nutritionData = ref(null)
+const nutritionData = ref<NutritionData | null>(null)
 
 // 计算营养数据
 const calculateData = () => {
@@ -49,7 +71,7 @@ const viewResults = () => {
     <n-layout-content class="content">
       <n-card class="plan-card">
         <n-space vertical size="large">
-          <StepsNav :current="2" />
+          <StepsNav :current="3" />
           
           <n-h1>生成增重计划</n-h1>
           
@@ -64,7 +86,7 @@ const viewResults = () => {
             <n-grid :cols="24" :x-gap="12" class="stats-grid">
               <n-grid-item :span="24" :md="8">
                 <n-card class="stat-card">
-                  <n-statistic label="基础代谢率 (BMR)" :value="nutritionData.bmr">
+                  <n-statistic label="基础代谢率 (BMR)" :value="nutritionData?.bmr">
                     <template #suffix>
                       <span>kcal/天</span>
                     </template>
@@ -74,7 +96,7 @@ const viewResults = () => {
               
               <n-grid-item :span="24" :md="8">
                 <n-card class="stat-card">
-                  <n-statistic label="每日总消耗 (TDEE)" :value="nutritionData.tdee">
+                  <n-statistic label="每日总消耗 (TDEE)" :value="nutritionData?.tdee">
                     <template #suffix>
                       <span>kcal/天</span>
                     </template>
@@ -84,7 +106,7 @@ const viewResults = () => {
               
               <n-grid-item :span="24" :md="8">
                 <n-card class="stat-card highlight">
-                  <n-statistic label="增重所需热量" :value="nutritionData.dailyCalories">
+                  <n-statistic label="增重所需热量" :value="nutritionData?.dailyCalories">
                     <template #suffix>
                       <span>kcal/天</span>
                     </template>
@@ -97,7 +119,7 @@ const viewResults = () => {
             
             <n-card class="weekly-goal-card">
               <n-space vertical>
-                <n-text>科学增重速度：每周 {{ nutritionData.weeklyGainGoal }} kg</n-text>
+                <n-text>科学增重速度：每周 {{ nutritionData?.weeklyGainGoal }} kg</n-text>
                 <n-progress
                   type="line"
                   :percentage="100"
@@ -105,7 +127,7 @@ const viewResults = () => {
                   :color="'#18a058'"
                   :height="24"
                 >
-                  <span style="color: white">{{ nutritionData.weeklyGainGoal }} kg/周</span>
+                  <span style="color: white">{{ nutritionData?.weeklyGainGoal }} kg/周</span>
                 </n-progress>
               </n-space>
             </n-card>
@@ -115,7 +137,7 @@ const viewResults = () => {
             <n-grid :cols="24" :x-gap="12" class="macros-grid">
               <n-grid-item :span="24" :md="8">
                 <n-card class="macro-card protein">
-                  <n-statistic label="蛋白质" :value="nutritionData.protein">
+                  <n-statistic label="蛋白质" :value="nutritionData?.protein">
                     <template #suffix>
                       <span>g/天</span>
                     </template>
@@ -125,7 +147,7 @@ const viewResults = () => {
               
               <n-grid-item :span="24" :md="8">
                 <n-card class="macro-card carbs">
-                  <n-statistic label="碳水化合物" :value="nutritionData.carbs">
+                  <n-statistic label="碳水化合物" :value="nutritionData?.carbs">
                     <template #suffix>
                       <span>g/天</span>
                     </template>
@@ -135,7 +157,7 @@ const viewResults = () => {
               
               <n-grid-item :span="24" :md="8">
                 <n-card class="macro-card fat">
-                  <n-statistic label="脂肪" :value="nutritionData.fat">
+                  <n-statistic label="脂肪" :value="nutritionData?.fat">
                     <template #suffix>
                       <span>g/天</span>
                     </template>
